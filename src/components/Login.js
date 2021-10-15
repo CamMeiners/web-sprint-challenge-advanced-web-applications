@@ -1,25 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
-class Login extends React.Component {
-    state = {
-        credentials: {
-          username: '',
-          password: ''
-        }
-      };
-    
-      handleChange = e => {
-        this.setState({
-          credentials: {
-            ...this.state.credentials,
+const Login = () => {
+    const initialCredentials = {
+        username:'',
+        password:''
+    }
+const {props, push} = useHistory();
+
+    const [creds, setCreds] = useState(initialCredentials)
+    const [error, setError] = useState('');
+     const handleChange = e => {
+        setCreds({
+            ...creds,
             [e.target.name]: e.target.value
-          }
         });
       };
-
-
     //Task List
 //1. Build login form DOM from scratch, making use of styled components if needed. Make sure the username input has id="username" and the password input as id="password".
 //2. Add in a p tag with the id="error" under the login form for use in error display.
@@ -27,19 +25,19 @@ class Login extends React.Component {
 //4. When login form is submitted, make an http call to the login route. Save the auth token on a successful response and redirect to view page.
 //5. If the response is not successful, display an error statement. **a server provided error message can be found in ```err.response.data```**
 //6. MAKE SURE TO ADD id="username", id="password", id="error" AND id="submit" TO THE APPROPRIATE DOM ELEMENTS. YOUR AUTOTESTS WILL FAIL WITHOUT THEM.
-      login = e => {
+    const login = e => {
         e.preventDefault();
-        axios.get("http://localhost:5000/login", this.state.credentials)
+        axios.post("http://localhost:5000/api/login", creds)
           .then(resp => {
-            localStorage.setItem("token", resp.data.payload);
-            console.log('resp', resp)
+            localStorage.setItem("token", resp.data.token);
             push('/view');
           })
           .catch(err=> {
-            console.log(err);
+            console.log(err.response.data);
+            setCreds(initialCredentials)
+            setError(err.response.data.error)
           })
       };
-      render(){
     return(
         <ComponentContainer>
         <ModalContainer>
@@ -48,30 +46,29 @@ class Login extends React.Component {
             <h2>Please enter your account information.</h2>
             </div>
             <div>
-        <form onSubmit={this.login}>
+        <form onSubmit={login}>
             Username:&nbsp;
           <input
             id='username'
             type="text"
             name="username"
-            value={this.state.credentials.username}
-            onChange={this.handleChange}
+            value={creds.username}
+            onChange={handleChange}
           />
           Password:&nbsp;
           <input
             id='password'
             type="password"
             name="password"
-            value={this.state.credentials.password}
-            onChange={this.handleChange}
+            value={creds.password}
+            onChange={handleChange}
           />
           <button id='submit'>Log in</button>
         </form>
-        <p id='error'></p>
+        <p id='error'>{error}</p>
       </div>
         </ModalContainer>
     </ComponentContainer>);
-}
 }
 export default Login;
 

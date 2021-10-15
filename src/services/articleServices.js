@@ -1,12 +1,12 @@
-import axiosWithAuth from './axiosWithAuth'
+import axiosWithAuth from '../utils/axiosWithAuth'
 
-const articleService = ()=> {
-    articles = [];
+const articleService = (state, setState)=> {
 axiosWithAuth().get('http://localhost:5000/api/articles')
 .then(resp=>{
-    this.setState({
-        articles: [resp.data]
-    });
+    console.log('bruh', resp.data)
+    setState(
+     resp.data
+    );
 
 })
 .catch(err=>{

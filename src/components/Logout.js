@@ -1,6 +1,20 @@
 import React from 'react';
+import axiosWithAuth from '../utils/axiosWithAuth';
+import { useEffect } from 'react';
+import { useHistory } from 'react-router';
 
-const Logout = () => {        
+const Logout = () => {      
+    const { push } =   useHistory();
+    useEffect(()=> {
+        axiosWithAuth()
+            .post('http://localhost:5000/api/logout')
+            .then(resp=>{
+                localStorage.removeItem("token");
+                push('/login');
+            }).catch(err=> {
+                console.log(err);
+            })
+    }, []);
     return(<div></div>);
 }
 
